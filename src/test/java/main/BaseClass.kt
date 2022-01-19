@@ -57,8 +57,8 @@ class BaseClass {
 
         try {
             // Нажатие на кнопку
-            lateinit var element: MobileElement // создаем объект MobileElement
-            element = driver.findElement(MobileBy.xpath("/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/android.view.ViewGroup/android.widget.ImageButton")) // производим поиск элемента по локатору id
+            var element: MobileElement =
+                driver.findElement(MobileBy.xpath("/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/android.view.ViewGroup/android.widget.ImageButton")) // создаем объект MobileElement // производим поиск элемента по локатору id
             element.click() // клик по элементу
             println("клик прошел успешно")
         } catch (e: org.openqa.selenium.NoSuchElementException) {
@@ -66,14 +66,29 @@ class BaseClass {
         }
 
         // Ввод текста в поле номера телефона
-        lateinit var element2: MobileElement // создаем объект MobileElement
-        element2 = driver.findElement(MobileBy.id("ru.sportmaster.app.handh.dev:id/editTextPhone")) // производим поиск элемента по локатору id
+        var element2: MobileElement =
+            driver.findElement(MobileBy.id("ru.sportmaster.app.handh.dev:id/editTextPhone")) // создаем объект MobileElement // производим поиск элемента по локатору id
         element2.sendKeys("9999999905") // ввод текста в поле
 
         // клик на кнопку Получить код
-        lateinit var element3: MobileElement // создаем объект MobileElement
-        element3 = driver.findElement(MobileBy.id("ru.sportmaster.app.handh.dev:id/buttonGetCode")) // производим поиск элемента по локатору id
+        var element3: MobileElement =
+            driver.findElement(MobileBy.id("ru.sportmaster.app.handh.dev:id/buttonGetCode")) // создаем объект MobileElement // производим поиск элемента по локатору id
         element3.click() // клик
+
+        // ввод код смс
+        var element4: MobileElement =
+            driver.findElement(MobileBy.id("ru.sportmaster.app.handh.dev:id/pinCodeEditText")) // создаем объект MobileElement // производим поиск элемента по локатору id
+        element4.sendKeys("1111") // вводим текст
+
+        // нажатие на кнопку запроса доступа к геолокации
+        var element5: MobileElement =
+            driver.findElement(MobileBy.id("com.android.permissioncontroller:id/permission_allow_foreground_only_button")) // создаем объект MobileElement // производим поиск элемента по локатору id
+        element5.click() // вводим текст
+
+        // нажатие на кнопку Да при подтверждении города
+        var element6: MobileElement =
+            driver.findElement(MobileBy.id("android:id/button1")) // создаем объект MobileElement // производим поиск элемента по локатору id
+        element6.click() // вводим текст
 
         TimeUnit.SECONDS.sleep(5)
     }
