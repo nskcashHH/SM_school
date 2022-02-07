@@ -1,47 +1,66 @@
 package main
 
 import io.appium.java_client.AppiumDriver
-import io.appium.java_client.MobileBy
 import io.appium.java_client.MobileElement
 import io.appium.java_client.android.AndroidDriver
+import io.appium.java_client.ios.IOSDriver
 import io.appium.java_client.remote.AndroidMobileCapabilityType
 import io.appium.java_client.remote.MobileCapabilityType
 import org.openqa.selenium.remote.DesiredCapabilities
-import org.testng.annotations.AfterSuite
-import org.testng.annotations.BeforeSuite
-import org.testng.annotations.Test
+import org.testng.annotations.*
+import utils.appPath
 import java.net.URL
 import java.util.concurrent.TimeUnit
 
-class BaseClass {
+open class BaseClass {
     lateinit var driver: AppiumDriver<MobileElement>
 
     @BeforeSuite
-    fun setupDriver() {
+    @Parameters(
+        value = ["paramPlatformVersion", "paramDeviceName",
+            "paramPlatformName", "paramTimeToDelay", "paramUDID"]
+    )
+    fun setupDriver(
+        paramPlatformVersion: String, paramDeviceName: String,
+        paramPlatformName: String, paramTimeToDelay: Long, paramUDID: String
+    ) {
 
         val url = URL("http://127.0.0.1:4723/wd/hub")
         val caps = DesiredCapabilities()
 
-        caps.setCapability(MobileCapabilityType.PLATFORM_NAME, "Android") // название платформы
-        caps.setCapability(MobileCapabilityType.PLATFORM_VERSION, "10") // верся ОС
-        caps.setCapability(MobileCapabilityType.DEVICE_NAME, "Pixel 2 API 29") // имя устройства
-        caps.setCapability(AndroidMobileCapabilityType.APP_PACKAGE, "ru.sportmaster.app.handh.dev")
-        caps.setCapability(
-            AndroidMobileCapabilityType.APP_ACTIVITY,
-            "ru.sportmaster.app.presentation.start.StartActivity"
-        )
-        caps.setCapability(
-            MobileCapabilityType.APP,
-            "/Users/aleksejbulygin/apps/Spormaster_android/sportmaster-4.0.13.5522_dev_beta.apk"
-        )
+        caps.setCapability(MobileCapabilityType.PLATFORM_NAME, paramPlatformName) // название платформы
+        caps.setCapability(MobileCapabilityType.PLATFORM_VERSION, paramPlatformVersion) // верся ОС
+        caps.setCapability(MobileCapabilityType.DEVICE_NAME, paramDeviceName) // имя устройства
+
         caps.setCapability(MobileCapabilityType.NO_RESET, true) // не сбрасывать приложение в 0 перед новый запуском
         caps.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "7200")
-        //   caps.setCapability(MobileCapabilityType.UDID, "")
+        caps.setCapability(MobileCapabilityType.UDID, paramUDID)
 
-        driver = AndroidDriver(url, caps) // установка драйвера и приложения на Android устройство
+        when (paramPlatformName) {
+            "Android" -> {
+                caps.setCapability(AndroidMobileCapabilityType.APP_PACKAGE, "ru.sportmaster.app.handh.dev")
+                caps.setCapability(
+                    AndroidMobileCapabilityType.APP_ACTIVITY,
+                    "ru.sportmaster.app.presentation.start.StartActivity"
+                )
+                caps.setCapability(
+                    MobileCapabilityType.APP, appPath.fullAppLocalPathAndroid
+                )
+                driver = AndroidDriver(url, caps) // установка драйвера и приложения на Android устройство
+            }
+            "iOS" -> {
+                caps.setCapability(
+                    MobileCapabilityType.APP, appPath.fullLocalAppLocalPathIOS
+                )
+                driver = IOSDriver(url, caps) // установка драйвера и приложения на iOS устройство
+            }
+        }
 
-        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS)
+        driver.manage().timeouts().implicitlyWait(paramTimeToDelay, TimeUnit.SECONDS)
         println("Драйвер установлен")
+
+        // проверка наличия онбординга + прохождение до главного экрана, минуя авторизацию, если онбординг найден
+
 
     }
 
@@ -51,48 +70,29 @@ class BaseClass {
         driver.quit()
     }
 
-    @Test
-    fun testOne() {
-        TimeUnit.SECONDS.sleep(1)
-
-        try {
-            // Нажатие на кнопку
-            var element: MobileElement =
-                driver.findElement(MobileBy.xpath("/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/android.view.ViewGroup/android.widget.ImageButton")) // создаем объект MobileElement // производим поиск элемента по локатору id
-            element.click() // клик по элементу
-            println("клик прошел успешно")
-        } catch (e: org.openqa.selenium.NoSuchElementException) {
-            println("Элемент не найден, тест продолжатеся")
-        }
-
-        // Ввод текста в поле номера телефона
-        var element2: MobileElement =
-            driver.findElement(MobileBy.id("ru.sportmaster.app.handh.dev:id/editTextPhone")) // создаем объект MobileElement // производим поиск элемента по локатору id
-        element2.sendKeys("9999999905") // ввод текста в поле
-
-        // клик на кнопку Получить код
-        var element3: MobileElement =
-            driver.findElement(MobileBy.id("ru.sportmaster.app.handh.dev:id/buttonGetCode")) // создаем объект MobileElement // производим поиск элемента по локатору id
-        element3.click() // клик
-
-        // ввод код смс
-        var element4: MobileElement =
-            driver.findElement(MobileBy.id("ru.sportmaster.app.handh.dev:id/pinCodeEditText")) // создаем объект MobileElement // производим поиск элемента по локатору id
-        element4.sendKeys("1111") // вводим текст
-
-        // нажатие на кнопку запроса доступа к геолокации
-        var element5: MobileElement =
-            driver.findElement(MobileBy.id("com.android.permissioncontroller:id/permission_allow_foreground_only_button")) // создаем объект MobileElement // производим поиск элемента по локатору id
-        element5.click() // вводим текст
-
-        // нажатие на кнопку Да при подтверждении города
-        var element6: MobileElement =
-            driver.findElement(MobileBy.id("android:id/button1")) // создаем объект MobileElement // производим поиск элемента по локатору id
-        element6.click() // вводим текст
-
-        TimeUnit.SECONDS.sleep(5)
+    @BeforeClass
+    fun beforeClass() {
+        // заново инициализирвать драйвер
+        // закрыть приложение
     }
 
+    @AfterClass
+    fun afterClass() {
+        // закрыть сессию драйвера
+        driver.quit()
+    }
+
+    @BeforeMethod
+    fun beforeMethod() {
+        // запустить приложение
+        driver.launchApp()
+        TimeUnit.SECONDS.sleep(4)
+    }
+
+    @AfterMethod
+    fun afterMethod() {
+        // закрыть приложение
+    }
 
 
 }

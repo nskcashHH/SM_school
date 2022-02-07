@@ -175,6 +175,6 @@ cucumber-html-reports
 #Mac OS stuff
 .DS_Store
 
-#Debug testng.xml
+#Debug testngAndroid.xml
 testng_Android_Pixel2_android10_debug.xml
 testng_iOS_iPhone11_14.5_debug.xml
