@@ -3,6 +3,7 @@ package tests
 import constructor_classes.locatorsTypes
 import io.appium.java_client.MobileBy
 import io.appium.java_client.MobileElement
+import io.qameta.allure.Description
 import locators.SplashScreenLocators
 import main.TestMethods
 import org.testng.annotations.Test
@@ -10,7 +11,8 @@ import java.util.concurrent.TimeUnit
 
 class TestOne : TestMethods() {
 
-    @Test
+    @Description(value = "Текст")
+    @Test(description = "Текст", priority = 1)
     fun testOne() {
 
 
